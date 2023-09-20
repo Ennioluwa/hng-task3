@@ -20,24 +20,65 @@ import { images } from "@/data/categories";
 import { useEffect, useState } from "react";
 import { SortableItem } from "./SortableItem";
 import Loader from "./Loader";
+import useStore from "@/store/store";
+import { useDebounce } from "@/hooks/use-debounce";
 
 const Gallery = () => {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<Image[]>([]);
 
+  const { search } = useStore();
+  const debouncedValue = useDebounce<string>(search, 500);
+
+  function searchImages(items: Image[], query: string) {
+    return items
+      .filter((item) => {
+        // Exact tag match
+        const hasExactMatch = item.tags.includes(query);
+
+        // Partial tag match
+        const hasPartialMatch = item.tags.some((tag) =>
+          tag.toLowerCase().includes(query.toLowerCase())
+        );
+
+        // Prioritize exact matches
+        if (hasExactMatch) return true;
+
+        // Partial matches second
+        if (hasPartialMatch) return true;
+
+        return false;
+      })
+      .sort((a, b) => {
+        // Sort exact matches first
+        return a.tags.includes(query) ? -1 : 1;
+      });
+  }
+
   useEffect(() => {
     const order = localStorage.getItem("galleryOrder");
 
-    console.log(order);
+    if (!order) {
+      setItems(images);
+      setLoading(false);
+      return;
+    }
+    let newOrder = JSON.parse(order);
 
-    if (order) {
-      setItems(JSON.parse(order));
+    if (newOrder.length === 18) {
+      setItems(newOrder);
     } else {
       setItems(images);
     }
 
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (!debouncedValue) return;
+    let items = searchImages(images, debouncedValue);
+    setItems(items);
+  }, [debouncedValue]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -55,13 +96,21 @@ const Gallery = () => {
       const newIndex = ids.indexOf(over.id);
       const updatedItems = arrayMove(items, oldIndex, newIndex);
       setItems(updatedItems);
-      localStorage.setItem("galleryOrder", JSON.stringify(updatedItems));
+      if (updatedItems.length === 18)
+        localStorage.setItem("galleryOrder", JSON.stringify(updatedItems));
     }
   }
 
   if (loading) {
     return <Loader />;
   }
+
+  if (!items.length)
+    return (
+      <p className="container mx-auto p-5 text-white text-3xl font-black py-20">
+        No pictures found
+      </p>
+    );
 
   return (
     <DndContext
