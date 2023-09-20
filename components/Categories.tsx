@@ -32,7 +32,7 @@ const Categories = () => {
   return (
     <div className=" p-5 container mx-auto flex flex-col gap-5 text-white ">
       <h1 className=" text-3xl font-bold">{title}</h1>
-      <div className="flex gap-3 overflow-x-auto mb-2">
+      <div className="flex gap-3 flex-wrap mb-2">
         {categories.map((category) => (
           <Category key={category} name={category} />
         ))}

@@ -3,7 +3,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Image from "next/image";
 
-export const SortableItem: FC<Image> = ({ id, src, name }) => {
+export const SortableItem: FC<Image> = ({ id, src, name, tags }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: id });
 
@@ -20,7 +20,24 @@ export const SortableItem: FC<Image> = ({ id, src, name }) => {
       {...listeners}
     >
       <div className="relative w-full h-[450px]">
-        <Image src={src} alt={name} fill className="object-cover rounded" />
+        <Image
+          src={src}
+          placeholder="blur"
+          blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+          alt={name}
+          fill
+          className="object-cover rounded"
+        />
+        <div className=" absolute bottom-3 left-3 flex flex-wrap gap-2">
+          {tags.map((tag, i) => (
+            <span
+              className=" border border-slate-600 text-white p-1 py-[2px] rounded-md bg-slate-600 bg-opacity-50 text-xs font-medium "
+              key={i}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
