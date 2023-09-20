@@ -19,11 +19,11 @@ export const SortableItem: FC<Image> = ({ id, src, name, tags }) => {
       {...attributes}
       {...listeners}
     >
-      <div className="relative w-full h-[450px]">
+      <div className="relative w-full h-[450px] bg-white rounded">
         <Image
           src={src}
           placeholder="blur"
-          blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+          blurDataURL="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
           alt={name}
           fill
           className="object-cover rounded"
